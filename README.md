@@ -1,4 +1,4 @@
-# DSTR Assignment
+# DSTR Assignment 2
 
 ## Prerequisites
 
