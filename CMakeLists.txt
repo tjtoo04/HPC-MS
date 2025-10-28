@@ -30,19 +30,19 @@ endif()
 # -------------------------------------------------------------------
 include(FetchContent)
 
-FetchContent_Declare(
-  csv-parser
-  GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
-  GIT_TAG master
-)
+# FetchContent_Declare(
+#   csv-parser
+#   GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
+#   GIT_TAG master
+# )
 
-FetchContent_MakeAvailable(csv-parser)
+# FetchContent_MakeAvailable(csv-parser)
 
 # -------------------------------------------------------------------
 # Add your subprojects
 # -------------------------------------------------------------------
 add_subdirectory(core_library)
 
-add_executable(JobResumeSearchSort src/main.cpp)
+add_executable(HPC src/main.cpp)
 
-target_link_libraries(JobResumeSearchSort PRIVATE core_library csv)
+target_link_libraries(HPC PRIVATE core_library)
