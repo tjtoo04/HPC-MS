@@ -20,7 +20,7 @@ void enableColorSupport()
 int main(int argc, char *argv[])
 {
   enableColorSupport();
-  
+
   std::cout << "We Are So Cooked";
 
   const int MAX_LINES = 5;
@@ -55,11 +55,28 @@ int main(int argc, char *argv[])
 
   /* Role 4: Ambulance Dispatcher */
 
+  cout << C_BOLD << C_CYAN << R"(
+      ██████╗██╗██████╗  ██████╗██╗   ██╗██╗      █████╗ ██████╗     
+    ██╔════╝██║██╔══██╗██╔════╝██║   ██║██║     ██╔══██╗██╔══██╗    
+    ██║     ██║██████╔╝██║     ██║   ██║██║     ███████║██████╔╝    
+    ██║     ██║██╔══██╗██║     ██║   ██║██║     ██╔══██║██╔══██╗    
+    ╚██████╗██║██║  ██║╚██████╗╚██████╔╝███████╗██║  ██║██║  ██║    
+    ╚═════╝╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝    
+                                                                    
+            ██████╗ ██╗   ██╗███████╗██╗   ██╗███████╗             
+            ██╔═══██╗██║   ██║██╔════╝██║   ██║██╔════╝             
+            ██║   ██║██║   ██║█████╗  ██║   ██║█████╗               
+            ██║▄▄ ██║██║   ██║██╔══╝  ██║   ██║██╔══╝               
+            ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗             
+            ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝             
+    )" << C_RESET
+          << endl;
+
   cout << "\n"
-       << C_BOLD << C_GREEN << "╔═══════════════════════════════════════════════╗" << C_RESET << endl;
-  cout << C_BOLD << C_GREEN << "║   ROLE 4: Ambulance Dispatcher Management     ║" << C_RESET << endl;
-  cout << C_BOLD << C_GREEN << "║           (KOK JIA YIN - TP071062)            ║" << C_RESET << endl;
-  cout << C_BOLD << C_GREEN << "╚═══════════════════════════════════════════════╝" << C_RESET << endl;
+       << C_BOLD << C_GREEN << "        ╔═══════════════════════════════════════════════╗" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN << "        ║   ROLE 4: Ambulance Dispatcher Management     ║" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN << "        ║           (KOK JIA YIN - TP071062)            ║" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN << "        ╚═══════════════════════════════════════════════╝" << C_RESET << endl;
 
   AmbulanceDispatcher dispatcher;
   dispatcher.run();
