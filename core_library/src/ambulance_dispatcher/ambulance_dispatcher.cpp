@@ -61,12 +61,13 @@ void AmbulanceDispatcher::loadAmbulancesFromFile(const string &filename)
     while (getline(file, line))
     {
         stringstream ss(line);
-        string vehicleID, ambulanceID, driver, status, startTime, endTime;
+        string vehicleID, ambulanceID, driver, status, scheduleDate, startTime, endTime;
 
         if (getline(ss, vehicleID, ',') &&
             getline(ss, ambulanceID, ',') &&
             getline(ss, driver, ',') &&
             getline(ss, status, ',') &&
+            getline(ss, scheduleDate, ',') &&
             getline(ss, startTime, ',') &&
             getline(ss, endTime, ','))
         {
@@ -79,7 +80,7 @@ void AmbulanceDispatcher::loadAmbulancesFromFile(const string &filename)
                     maxAmbNum = ambNum;
             }
 
-            Ambulance ambulance(vehicleID, ambulanceID, driver, status, startTime, endTime);
+            Ambulance ambulance(vehicleID, ambulanceID, driver, status, scheduleDate, startTime, endTime);
             ambulanceQueue.enqueue(ambulance);
             count++;
         }
@@ -148,6 +149,7 @@ void AmbulanceDispatcher::saveAmbulancesToFile(const string &filename) const
              << ambulances[i].ambulanceID << ","
              << ambulances[i].driverName << ","
              << ambulances[i].status << ","
+             << ambulances[i].scheduleDate << ","
              << ambulances[i].shiftStartTime << ","
              << ambulances[i].shiftEndTime << endl;
     }
@@ -174,8 +176,20 @@ bool AmbulanceDispatcher::isRotationNeeded() const
     }
 
     // Check if current shift has ended
+    string currentDate = getCurrentDateString();
     string currentTime = getCurrentTimeString();
-    return (currentTime >= currentDuty.shiftEndTime && currentDuty.shiftEndTime != "--:--");
+    if (currentDate > currentDuty.scheduleDate)
+    {
+        return true;
+    }
+
+    // Same date, check time
+    if (currentDate == currentDuty.scheduleDate)
+    {
+        return (currentTime >= currentDuty.shiftEndTime && currentDuty.shiftEndTime != "--:--");
+    }
+
+    return false;
 }
 
 // Format duration display
@@ -234,6 +248,7 @@ void AmbulanceDispatcher::registerAmbulance()
     string status = "Standby";
     string shiftStart = "--:--";
     string shiftEnd = "--:--";
+    string scheduleDate = getCurrentDateString();
     if (ambulanceQueue.isEmpty())
     {
         // First ambulance - assign current time as start
@@ -241,8 +256,14 @@ void AmbulanceDispatcher::registerAmbulance()
         shiftStart = getCurrentTimeString();
         shiftEnd = addHoursToTime(shiftStart, shiftDurationHours);
 
+        if (shiftEnd < shiftStart)
+        {
+            addHoursToDateTime(scheduleDate, shiftStart, 0);
+        }
+
         cout << C_GREEN << "\n✓ First ambulance registered!" << C_RESET << endl;
         cout << C_GREEN << "  Status: " << C_BOLD << "On Duty" << C_RESET << endl;
+        cout << C_GREEN << "  Date: " << C_BOLD << scheduleDate << " (" << getDayOfWeek(scheduleDate) << ")" << C_RESET << endl;
         cout << C_GREEN << "  Shift: " << C_BOLD << shiftStart << " - " << shiftEnd
              << C_RESET << " (" << shiftDurationHours << " hours)" << endl;
     }
@@ -260,8 +281,15 @@ void AmbulanceDispatcher::registerAmbulance()
             Ambulance lastAmbulance = ambulances[count - 1];
             if (lastAmbulance.shiftEndTime != "--:--")
             {
+                // Base date from previous ambulance
+                scheduleDate = lastAmbulance.scheduleDate;
                 shiftStart = lastAmbulance.shiftEndTime;
                 shiftEnd = addHoursToTime(shiftStart, shiftDurationHours);
+
+                if (shiftStart == "00:00" || (shiftEnd < shiftStart && shiftEnd != "00:00"))
+                {
+                    addHoursToDateTime(scheduleDate, shiftStart, 24); // Move to next day
+                }
             }
         }
 
@@ -275,7 +303,7 @@ void AmbulanceDispatcher::registerAmbulance()
     }
 
     // Create ambulance object
-    Ambulance newAmbulance(vehicleID, ambulanceID, driver, status, shiftStart, shiftEnd);
+    Ambulance newAmbulance(vehicleID, ambulanceID, driver, status, scheduleDate, shiftStart, shiftEnd);
 
     // Add to queue
     ambulanceQueue.enqueue(newAmbulance);
@@ -324,10 +352,9 @@ void AmbulanceDispatcher::rotateAmbulanceShift()
 
     if (ambulanceQueue.getSize() == 1)
     {
-        cout << C_YELLOW << "\n⚠ INFO: " << C_RESET << "Only one ambulance in system. Rotation not applicable." << endl;
+        cout << C_YELLOW << "\n⚠ INFO: " << C_RESET << "Only one ambulance in system." << endl;
         cout << "Extending current shift by " << shiftDurationHours << " hours..." << endl;
 
-        // Extend the single ambulance's shift
         Ambulance current;
         ambulanceQueue.getFront(current);
         current.shiftStartTime = current.shiftEndTime;
@@ -339,10 +366,9 @@ void AmbulanceDispatcher::rotateAmbulanceShift()
         return;
     }
 
-    // Get current on-duty ambulance
+    // Display current ambulance info
     Ambulance currentDuty;
     ambulanceQueue.getFront(currentDuty);
-
     string currentTime = getCurrentTimeString();
 
     cout << "\n"
@@ -371,6 +397,7 @@ void AmbulanceDispatcher::rotateAmbulanceShift()
         cout << "Current time is " << C_CYAN << currentTime << C_RESET << ". Shift is still active." << endl;
     }
 
+    // Ask for rotation type
     cout << "\n"
          << C_BOLD << "Select Rotation Type:" << C_RESET << endl;
     cout << "  " << C_CYAN << "1." << C_RESET << " Normal Rotation (Follow original schedule)" << endl;
@@ -397,7 +424,6 @@ void AmbulanceDispatcher::rotateAmbulanceShift()
         return;
     }
 
-    // Show next scheduled ambulance
     displayUpcomingRotation();
 }
 
@@ -407,20 +433,32 @@ void AmbulanceDispatcher::normalRotate()
     Ambulance currentDuty;
     ambulanceQueue.getFront(currentDuty);
 
-    // Get the next ambulance's scheduled time
+    // Get all ambulances to properly update the rotated one
     const int MAX_AMB = 50;
     Ambulance ambulances[MAX_AMB];
     int count;
     ambulanceQueue.getAllAmbulances(ambulances, count);
 
-    // The second ambulance
+    // The second ambulance in line (index 1) has the next scheduled shift
     string nextShiftStart = (count > 1) ? ambulances[1].shiftStartTime : addHoursToTime(currentDuty.shiftEndTime, 0);
     string nextShiftEnd = (count > 1) ? ambulances[1].shiftEndTime : addHoursToTime(nextShiftStart, shiftDurationHours);
 
-    ambulanceQueue.rotate();
-
+    // Calculate new schedule for the ambulance being rotated to rear
+    // It should start after the last ambulance (which is at index count-1)
+    string rotatedDate = ambulances[count - 1].scheduleDate;
     string rotatedStartTime = ambulances[count - 1].shiftEndTime;
     string rotatedEndTime = addHoursToTime(rotatedStartTime, shiftDurationHours);
+
+    if (rotatedStartTime == "00:00" || (rotatedEndTime < rotatedStartTime && rotatedEndTime != "00:00"))
+    {
+        // This shift starts at midnight or crosses midnight, so it's the next day
+        string tempDate = rotatedDate;
+        addHoursToDateTime(tempDate, rotatedStartTime, 0);
+        addHoursToDateTime(rotatedDate, rotatedStartTime, 24);
+    }
+
+    // Perform rotation
+    ambulanceQueue.rotate();
 
     // Update new on-duty ambulance with its original schedule
     Ambulance newDuty;
@@ -430,9 +468,13 @@ void AmbulanceDispatcher::normalRotate()
     newDuty.shiftEndTime = nextShiftEnd;
     ambulanceQueue.updateFront(newDuty);
 
+    // Now we need to update the rotated ambulance at the rear
+    // Get all ambulances again after rotation
     Ambulance updatedAmbulances[MAX_AMB];
     ambulanceQueue.getAllAmbulances(updatedAmbulances, count);
 
+    // The old duty ambulance is now at the end (index count-1)
+    updatedAmbulances[count - 1].scheduleDate = rotatedDate;
     updatedAmbulances[count - 1].shiftStartTime = rotatedStartTime;
     updatedAmbulances[count - 1].shiftEndTime = rotatedEndTime;
 
@@ -457,21 +499,24 @@ void AmbulanceDispatcher::normalRotate()
          << C_BOLD << "Shift Changes:" << C_RESET << endl;
     cout << "  " << currentDuty.vehicleID << " (" << currentDuty.driverName << ")" << endl;
     cout << "    Status: " << C_YELLOW << "On Duty → Standby" << C_RESET << endl;
-    cout << "    Completed: " << currentDuty.shiftStartTime << " - " << currentDuty.shiftEndTime << endl;
+    cout << "    Completed: " << currentDuty.scheduleDate << " " << currentDuty.shiftStartTime << " - " << currentDuty.shiftEndTime << endl;
+    cout << "    New Schedule: " << C_CYAN << rotatedDate << " " << rotatedStartTime << " - " << rotatedEndTime << C_RESET
+         << " (" << shiftDurationHours << " hrs)" << endl;
 
     cout << "\n  " << C_GREEN << newDuty.vehicleID << " (" << newDuty.driverName << ")" << C_RESET << endl;
     cout << "    Status: " << C_GREEN << "Standby → On Duty" << C_RESET << endl;
-    cout << "    Shift: " << C_GREEN << newDuty.shiftStartTime << " - "
-         << newDuty.shiftEndTime << C_RESET << " (" << shiftDurationHours << " hrs)" << endl;
+    cout << "    Shift: " << C_GREEN << newDuty.scheduleDate << " " << newDuty.shiftStartTime << " - "
+         << newDuty.shiftEndTime << C_RESET << " (" << calculateTimeDifference(newDuty.shiftStartTime, newDuty.shiftEndTime) << " hrs)" << endl;
 }
 
-// Dynamic rotation - adjusts to current time
+// Dynamic rotation
 void AmbulanceDispatcher::dynamicRotate()
 {
     Ambulance currentDuty;
     ambulanceQueue.getFront(currentDuty);
 
     string currentTime = getCurrentTimeString();
+    string currentDate = getCurrentDateString();
 
     // Get all ambulances first
     const int MAX_AMB = 50;
@@ -479,35 +524,70 @@ void AmbulanceDispatcher::dynamicRotate()
     int count;
     ambulanceQueue.getAllAmbulances(ambulances, count);
 
+    // Perform rotation
     ambulanceQueue.rotate();
 
-    Ambulance newDuty = ambulances[1]; // new front
+    // Update new on-duty ambulance (which was at index 1, now becomes index 0 after rotation)
+    Ambulance newDuty = ambulances[1]; // The one that was second becomes first
     newDuty.status = "On Duty";
+    newDuty.scheduleDate = currentDate;
     newDuty.shiftStartTime = currentTime;
     newDuty.shiftEndTime = addHoursToTime(currentTime, shiftDurationHours);
 
     // Update the front ambulance
     ambulanceQueue.updateFront(newDuty);
 
+    // Now update all subsequent ambulances' schedules
+    string nextDate = currentDate;
     string nextStart = newDuty.shiftEndTime;
 
-    // Rotate array & update schedule
-    Ambulance rotatedAmbulances[MAX_AMB];
-    rotatedAmbulances[0] = newDuty;
+    // Check if first shift crosses midnight
+    if (nextStart < currentTime)
+    {
+        // We crossed midnight, increment date
+        addHoursToDateTime(nextDate, currentTime, shiftDurationHours);
+        nextStart = newDuty.shiftEndTime; // Keep the time as is
+    }
 
+    // Rotate the array: old index 0 goes to end, everything shifts left
+    Ambulance rotatedAmbulances[MAX_AMB];
+    rotatedAmbulances[0] = newDuty; // New on-duty (was at index 1)
+
+    // Copy remaining ambulances and update their schedules
     for (int i = 2; i < count; i++)
     {
         rotatedAmbulances[i - 1] = ambulances[i];
+        rotatedAmbulances[i - 1].scheduleDate = nextDate;
         rotatedAmbulances[i - 1].shiftStartTime = nextStart;
         rotatedAmbulances[i - 1].shiftEndTime = addHoursToTime(nextStart, shiftDurationHours);
+
+        // Check if we crossed midnight
+        if (rotatedAmbulances[i - 1].shiftEndTime < nextStart)
+        {
+            // Crossed midnight - increment date
+            addHoursToDateTime(nextDate, nextStart, shiftDurationHours);
+            rotatedAmbulances[i - 1].scheduleDate = nextDate;
+            // Keep the end time as calculated
+        }
+
+        // Prepare for next iteration
+        nextDate = rotatedAmbulances[i - 1].scheduleDate;
         nextStart = rotatedAmbulances[i - 1].shiftEndTime;
     }
 
     // Add the old on-duty ambulance to the end
     rotatedAmbulances[count - 1] = ambulances[0];
     rotatedAmbulances[count - 1].status = "Standby";
+    rotatedAmbulances[count - 1].scheduleDate = nextDate;
     rotatedAmbulances[count - 1].shiftStartTime = nextStart;
     rotatedAmbulances[count - 1].shiftEndTime = addHoursToTime(nextStart, shiftDurationHours);
+
+    // Handle day transition for last ambulance
+    if (rotatedAmbulances[count - 1].shiftEndTime < nextStart)
+    {
+        addHoursToDateTime(nextDate, nextStart, shiftDurationHours);
+        rotatedAmbulances[count - 1].scheduleDate = nextDate;
+    }
 
     // Clear the queue and rebuild with new schedules
     while (!ambulanceQueue.isEmpty())
@@ -516,6 +596,7 @@ void AmbulanceDispatcher::dynamicRotate()
         ambulanceQueue.dequeue(temp);
     }
 
+    // Re-enqueue with updated schedules
     for (int i = 0; i < count; i++)
     {
         ambulanceQueue.enqueue(rotatedAmbulances[i]);
@@ -530,19 +611,40 @@ void AmbulanceDispatcher::dynamicRotate()
          << C_BOLD << "Shift Changes:" << C_RESET << endl;
     cout << "  " << currentDuty.vehicleID << " (" << currentDuty.driverName << ")" << endl;
     cout << "    Status: " << C_YELLOW << "On Duty → Standby" << C_RESET << endl;
-    cout << "    Completed: " << currentDuty.shiftStartTime << " - " << currentDuty.shiftEndTime << endl;
-    cout << "    New Schedule: " << rotatedAmbulances[count - 1].shiftStartTime << " - "
+    cout << "    Completed: " << currentDuty.scheduleDate << " " << currentDuty.shiftStartTime << " - " << currentDuty.shiftEndTime << endl;
+    cout << "    New Schedule: " << rotatedAmbulances[count - 1].scheduleDate << " "
+         << rotatedAmbulances[count - 1].shiftStartTime << " - "
          << rotatedAmbulances[count - 1].shiftEndTime << endl;
 
     cout << "\n  " << C_GREEN << newDuty.vehicleID << " (" << newDuty.driverName << ")" << C_RESET << endl;
     cout << "    Status: " << C_GREEN << "Standby → On Duty" << C_RESET << endl;
-    cout << "    New Shift: " << C_GREEN << newDuty.shiftStartTime << " - "
+    cout << "    New Shift: " << C_GREEN << newDuty.scheduleDate << " " << newDuty.shiftStartTime << " - "
          << newDuty.shiftEndTime << C_RESET << " (" << shiftDurationHours << " hrs)" << endl;
 
     cout << C_CYAN << "\n📅 All " << count << " ambulances' schedules updated!" << C_RESET << endl;
 
-    // Show updated schedule
-    // displayAmbulanceSchedule();
+    // Show updated schedule for all ambulances
+    cout << "\n"
+         << C_BOLD << "Updated Schedule for All Ambulances:" << C_RESET << endl;
+    for (int i = 0; i < count; i++)
+    {
+        // Calculate actual duration (should always be shiftDurationHours)
+        int duration = shiftDurationHours;
+        if (rotatedAmbulances[i].shiftEndTime < rotatedAmbulances[i].shiftStartTime)
+        {
+            // Crosses midnight - duration is correct but time wraps
+            duration = 24 - calculateTimeDifference(rotatedAmbulances[i].shiftEndTime, rotatedAmbulances[i].shiftStartTime);
+        }
+
+        cout << "  " << rotatedAmbulances[i].vehicleID << ": "
+             << rotatedAmbulances[i].scheduleDate << " "
+             << rotatedAmbulances[i].shiftStartTime << " - "
+             << rotatedAmbulances[i].shiftEndTime
+             << " (" << duration << " hrs)";
+        if (i == 0)
+            cout << C_GREEN << " (On Duty)" << C_RESET;
+        cout << endl;
+    }
 }
 
 // Display upcoming rotation schedule
@@ -590,15 +692,17 @@ void AmbulanceDispatcher::displayAmbulanceSchedule() const
     }
 
     cout << "\n"
-         << C_CYAN << string(95, '=') << C_RESET << endl;
+         << C_CYAN << string(120, '=') << C_RESET << endl;
     cout << C_BOLD << C_CYAN << "                AMBULANCE ROTATION SCHEDULE & DUTY ROSTER" << C_RESET << endl;
-    cout << C_CYAN << string(95, '=') << C_RESET << endl;
+    cout << C_CYAN << string(120, '=') << C_RESET << endl;
 
     // Display current time
     string currentTime = getCurrentTimeString();
+    cout << "Current Date: " << C_BOLD << C_CYAN << getCurrentDateString()
+         << " (" << getDayOfWeek(getCurrentDateString()) << ")" << C_RESET << endl;
     cout << "Current Time: " << C_BOLD << C_CYAN << currentTime << C_RESET << endl;
     cout << "Standard Shift Duration: " << C_YELLOW << shiftDurationHours << " hours" << C_RESET << endl;
-    cout << C_CYAN << string(95, '-') << C_RESET << endl;
+    cout << C_CYAN << string(120, '-') << C_RESET << endl;
 
     cout << left
          << setw(10) << "No."
@@ -606,14 +710,15 @@ void AmbulanceDispatcher::displayAmbulanceSchedule() const
          << setw(15) << "Registration"
          << setw(20) << "Driver Name"
          << setw(12) << "Status"
+         << setw(16) << "Schedule Date"
          << setw(12) << "Shift Start"
          << setw(12) << "Shift End"
          << setw(10) << "Duration" << endl;
-    cout << string(100, '-') << endl;
+    cout << string(120, '-') << endl;
 
     ambulanceQueue.display();
 
-    cout << C_CYAN << string(95, '=') << C_RESET << endl;
+    cout << C_CYAN << string(120, '=') << C_RESET << endl;
 
     // Check if rotation is needed
     if (isRotationNeeded())
@@ -674,6 +779,7 @@ void AmbulanceDispatcher::displayDutyStatistics() const
     cout << "  Type: " << C_CYAN << "Circular Queue (Linked List)" << C_RESET << endl;
     cout << "  Principle: Equal duty time distribution" << endl;
     cout << "  Coverage: Continuous 24/7 operation" << endl;
+    cout << "  Rotation Modes: Normal (scheduled) & Dynamic (real-time)" << endl;
 
     cout << C_CYAN << string(70, '=') << C_RESET << endl;
 }
@@ -689,6 +795,7 @@ void AmbulanceDispatcher::setShiftDuration(int hours)
         cout << C_GREEN << "\n✓ Shift duration updated from " << oldDuration
              << " to " << hours << " hours." << C_RESET << endl;
 
+        // Ask if user wants to update existing schedules
         cout << C_YELLOW << "\nDo you want to recalculate all existing ambulance schedules? (y/n): " << C_RESET;
         char choice;
         cin >> choice;
@@ -703,12 +810,28 @@ void AmbulanceDispatcher::setShiftDuration(int hours)
                 ambulanceQueue.getAllAmbulances(ambulances, count);
 
                 // Keep the first ambulance's start time, recalculate all durations
+                string currentDate = ambulances[0].scheduleDate;
                 string currentStart = ambulances[0].shiftStartTime;
 
                 for (int i = 0; i < count; i++)
                 {
+                    ambulances[i].scheduleDate = currentDate;
                     ambulances[i].shiftStartTime = currentStart;
                     ambulances[i].shiftEndTime = addHoursToTime(currentStart, hours);
+
+                    // Handle day transition
+                    bool crossesMidnight = (ambulances[i].shiftEndTime < currentStart) || (ambulances[i].shiftEndTime == "00:00");
+
+                    if (crossesMidnight)
+                    {
+                        // Advance this ambulance’s schedule date
+                        string tempDate = currentDate;
+                        string tempTime = currentStart;
+                        addHoursToDateTime(tempDate, tempTime, hours);
+                        currentDate = tempDate;
+                    }
+
+                    // Update start time for next iteration
                     currentStart = ambulances[i].shiftEndTime;
                 }
 

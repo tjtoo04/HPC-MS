@@ -11,18 +11,19 @@ struct Ambulance
   string ambulanceID;
   string driverName;
   string status;
+  string scheduleDate;
   string shiftStartTime;
   string shiftEndTime;
 
   // Constructor
   Ambulance() : vehicleID(""), ambulanceID(""), driverName(""),
-                status("Standby"), shiftStartTime("--:--"), shiftEndTime("--:--") {}
+                status("Standby"), scheduleDate("--"), shiftStartTime("--:--"), shiftEndTime("--:--") {}
 
   // Parameterized constructor
-  Ambulance(string vID, string aID, string driver, string stat = "Standby",
+  Ambulance(string vID, string aID, string driver, string stat = "Standby", string date = "--",
             string startTime = "--:--", string endTime = "--:--")
       : vehicleID(vID), ambulanceID(aID), driverName(driver),
-        status(stat), shiftStartTime(startTime), shiftEndTime(endTime) {}
+        status(stat), scheduleDate(date), shiftStartTime(startTime), shiftEndTime(endTime) {}
 
   void display() const;
 
@@ -35,7 +36,13 @@ struct Ambulance
 
 string getCurrentTimeString();
 
+string getCurrentDateString();
+
+string getDayOfWeek(string dateStr);
+
 string addHoursToTime(string timeStr, int hours);
+
+void addHoursToDateTime(string& date, string& time, int hours);
 
 int calculateTimeDifference(string startTime, string endTime);
 
