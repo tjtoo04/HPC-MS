@@ -542,7 +542,7 @@ void AmbulanceDispatcher::dynamicRotate()
     cout << C_CYAN << "\n📅 All " << count << " ambulances' schedules updated!" << C_RESET << endl;
 
     // Show updated schedule
-    displayAmbulanceSchedule();
+    // displayAmbulanceSchedule();
 }
 
 // Display upcoming rotation schedule
