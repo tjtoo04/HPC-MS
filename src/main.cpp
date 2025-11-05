@@ -5,6 +5,11 @@
 #include <iostream>
 #include "core_library/ambulance_dispatcher.hpp"
 
+#include "core_library/supply_item.hpp"
+#include "core_library/stack.hpp"
+#include <iostream>
+#include "core_library/stack_menu.cpp"
+
 void enableColorSupport()
 {
 #ifdef _WIN32
@@ -20,6 +25,7 @@ void enableColorSupport()
 int main(int argc, char *argv[])
 {
   enableColorSupport();
+
 
   std::cout << "We Are So Cooked";
 
@@ -80,6 +86,8 @@ int main(int argc, char *argv[])
 
   AmbulanceDispatcher dispatcher;
   dispatcher.run();
+  
+  runStackProgram();
 
   return 0;
 }
