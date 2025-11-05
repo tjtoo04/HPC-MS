@@ -1,0 +1,5 @@
+SI1,bandage,20,BT1
+SI2,scalpal,10,BT1
+SI3,hippo,2,BT12
+SI4,broom,12,BT123
+SI5,knife,20,BT123

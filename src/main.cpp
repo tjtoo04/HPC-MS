@@ -1,5 +1,9 @@
 #include "core_library/FileIO.hpp"
+#include "core_library/supply_item.hpp"
+#include "core_library/stack.hpp"
 #include <iostream>
+#include "core_library/stack_menu.cpp"
+
 int main(int argc, char *argv[]) {
   std::cout << "We Are So Cooked";
 
@@ -25,5 +29,8 @@ int main(int argc, char *argv[]) {
   } else {
     std::cout << "Failed to read file.\n";
   }
+
+  runStackProgram();
+
   return 0;
 }
