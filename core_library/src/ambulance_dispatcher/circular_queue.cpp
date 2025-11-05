@@ -65,9 +65,6 @@ void CircularQueue::enqueue(const Ambulance &ambulance)
     }
 
     size++;
-    // cout << GREEN << "\n SUCCESS: " << RESET << "Ambulance "
-    //      << BOLD << ambulance.ambulanceID << RESET
-    //      << " registered and added to rotation!" << endl;
 }
 
 // Dequeue: Remove the front ambulance from the queue
@@ -112,14 +109,14 @@ bool CircularQueue::rotate()
         return true;
     }
 
-    // Get current front ambulance and update its status
+    // Update curr ambulance status
     Node *front = rear->next;
     front->data.status = "Standby";
 
-    // Move rear pointer forward (rotation)
+    // Rotate
     rear = rear->next;
 
-    // Update new front ambulance status to On Duty
+    // Update front = on duty
     Node *newFront = rear->next;
     newFront->data.status = "On Duty";
 
