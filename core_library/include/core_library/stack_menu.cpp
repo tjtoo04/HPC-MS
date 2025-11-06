@@ -1,13 +1,14 @@
-#include <iostream>
-#include "supply_item.hpp"
 #include "stack.hpp"
+#include "supply_item.hpp"
+#include <iostream>
+#include <limits>
 
 Stack<SupplyItem> itemStack;
 
 void addItems() {
   int max = 10;
   int index = 0;
-  SupplyItem* temp = new SupplyItem[max];
+  SupplyItem *temp = new SupplyItem[max];
   std::string batchId;
   int id = FileIO::getFileCount("supplyitem");
   std::string test;
@@ -30,8 +31,8 @@ void addItems() {
     if (index < max) {
       temp[index++] = SupplyItem(std::to_string(++id), type, quantity, batchId);
     } else {
-      int newMax = max*2;
-      SupplyItem* newTemp = new SupplyItem[newMax];
+      int newMax = max * 2;
+      SupplyItem *newTemp = new SupplyItem[newMax];
       for (int i = 0; i < max; i++) {
         newTemp[i] = temp[i];
       }
@@ -39,7 +40,6 @@ void addItems() {
       temp = newTemp;
       max = newMax;
     }
-
 
     std::cout << "continue? (press enter to continue): ";
     std::getline(std::cin, test);
@@ -49,7 +49,8 @@ void addItems() {
       std::cout << "Loading into stack..." << std::endl;
       itemStack.pushItemsIntoStack(temp, max);
       // update text file
-      FileIO::appendObjectsToFile("../core_library/include/data/supply_item.txt", temp, index);
+      FileIO::appendObjectsToFile(
+          "../core_library/include/data/supply_item.txt", temp, index);
       // update index file
       FileIO::updateFileCount("supplyitem", id);
 
@@ -69,7 +70,8 @@ void addItems() {
 void runStackProgram() {
   // read and load
   itemStack.loadDataIntoStack();
-  std::cout << "Test" << endl;;
+  std::cout << "Test" << endl;
+  ;
   itemStack.displayStackItems();
   // add data into ding dong stack
   addItems();
