@@ -42,7 +42,6 @@ public:
 
     void getAllAmbulances(Ambulance ambulances[], int &count) const;
 
-    bool findLeastDutyAmbulance(Ambulance &ambulance) const;
 };
 
 #endif

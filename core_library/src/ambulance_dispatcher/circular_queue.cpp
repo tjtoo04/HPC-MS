@@ -196,33 +196,3 @@ void CircularQueue::getAllAmbulances(Ambulance ambulances[], int &count) const
         current = current->next;
     } while (current != front);
 }
-
-// Find ambulance with least duty hours
-bool CircularQueue::findLeastDutyAmbulance(Ambulance &ambulance) const
-{
-    if (isEmpty())
-    {
-        return false;
-    }
-
-    Node *front = rear->next;
-    Node *current = front;
-    Node *leastDutyNode = front;
-    string earliestEndTime = front->data.shiftEndTime;
-
-    current = current->next;
-    while (current != front)
-    {
-        // Compare shift end times
-        if (current->data.shiftEndTime < earliestEndTime &&
-            current->data.shiftEndTime != "--:--")
-        {
-            earliestEndTime = current->data.shiftEndTime;
-            leastDutyNode = current;
-        }
-        current = current->next;
-    }
-
-    ambulance = leastDutyNode->data;
-    return true;
-}

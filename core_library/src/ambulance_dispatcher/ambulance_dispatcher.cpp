@@ -17,13 +17,13 @@ using namespace std;
 // Constructor
 AmbulanceDispatcher::AmbulanceDispatcher() : nextAmbulanceNumber(1), shiftDurationHours(8)
 {
-    loadAmbulancesFromFile("ambulances.txt");
+    loadAmbulancesFromFile("../../data/ambulances.txt");
 }
 
 // Destructor
 AmbulanceDispatcher::~AmbulanceDispatcher()
 {
-    saveAmbulancesToFile("ambulances.txt");
+    saveAmbulancesToFile("../../data/ambulances.txt");
 }
 
 // Load ambulances from file
@@ -108,6 +108,7 @@ void AmbulanceDispatcher::loadAmbulancesFromFile(const string &filename)
         std::this_thread::sleep_for(std::chrono::milliseconds(80));
     }
 
+    // Close file
     file.close();
     nextAmbulanceNumber = maxAmbNum + 1;
 
@@ -156,6 +157,8 @@ void AmbulanceDispatcher::saveAmbulancesToFile(const string &filename) const
 
     file.close();
 }
+
+/* ========================== Helper ========================== */
 
 // Generate ambulance ID
 string AmbulanceDispatcher::generateNextAmbulanceID()
@@ -263,7 +266,7 @@ void AmbulanceDispatcher::registerAmbulance()
 
         cout << C_GREEN << "\n✓ First ambulance registered!" << C_RESET << endl;
         cout << C_GREEN << "  Status: " << C_BOLD << "On Duty" << C_RESET << endl;
-        cout << C_GREEN << "  Date: " << C_BOLD << scheduleDate << " (" << getDayOfWeek(scheduleDate) << ")" << C_RESET << endl;
+        cout << C_GREEN << "  Date: " << C_BOLD << scheduleDate << " (" << getDayOfWeek() << ")" << C_RESET << endl;
         cout << C_GREEN << "  Shift: " << C_BOLD << shiftStart << " - " << shiftEnd
              << C_RESET << " (" << shiftDurationHours << " hours)" << endl;
     }
@@ -469,6 +472,7 @@ void AmbulanceDispatcher::normalRotate()
     Ambulance updatedAmbulances[MAX_AMB];
     ambulanceQueue.getAllAmbulances(updatedAmbulances, count);
 
+    // Update last ambulance
     updatedAmbulances[count - 1].scheduleDate = rotatedDate;
     updatedAmbulances[count - 1].shiftStartTime = rotatedStartTime;
     updatedAmbulances[count - 1].shiftEndTime = rotatedEndTime;
@@ -666,7 +670,7 @@ void AmbulanceDispatcher::displayAmbulanceSchedule() const
     // Display current time
     string currentTime = getCurrentTimeString();
     cout << "Current Date: " << C_BOLD << C_CYAN << getCurrentDateString()
-         << " (" << getDayOfWeek(getCurrentDateString()) << ")" << C_RESET << endl;
+         << " (" << getDayOfWeek() << ")" << C_RESET << endl;
     cout << "Current Time: " << C_BOLD << C_CYAN << currentTime << C_RESET << endl;
     cout << "Standard Shift Duration: " << C_YELLOW << shiftDurationHours << " hours" << C_RESET << endl;
     cout << C_CYAN << string(120, '-') << C_RESET << endl;
