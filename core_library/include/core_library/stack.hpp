@@ -1,20 +1,17 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-// #include "FileIO.hpp"
-// #include "supply_item.hpp"
+#include "FileIO.hpp"
+#include "supply_item.hpp"
 #include <iostream>
 #include <stdexcept>
 
 using namespace std;
 
 template <typename T> class Stack {
-private:
-  static constexpr size_t MAX_BYTES = 1 * 1024 * 1024; // 1 MB
-  static constexpr size_t MAX_ELEMENTS = MAX_BYTES / sizeof(T);
-
-  T data[MAX_ELEMENTS];
-  int top;
+  private:
+    static constexpr size_t MAX_BYTES = 1 * 1024 * 1024; // 1 MB
+    static constexpr size_t MAX_ELEMENTS = MAX_BYTES / sizeof(T);
 
     T* data;
     int top;

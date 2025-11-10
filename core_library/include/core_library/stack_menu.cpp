@@ -5,30 +5,6 @@
 
 Stack<SupplyItem> itemStack;
 
-int getIntInput(const std::string &prompt, int min, int max)
-{
-  int choice;
-  while (true)
-  {
-    std::cout << prompt;
-    if (std::cin >> choice)
-    {
-      if (choice >= min && choice <= max)
-      {
-        if (std::cin.peek() == '\n') std::cin.ignore();
-        return choice;
-      }
-      std::cout << "Invalid choice. Please enter between " << min << " and " << max << ".\n";
-    }
-    else
-    {
-      std::cout << "Invalid input. Please enter a number.\n";
-      std::cin.clear();
-      std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
-    }
-  }
-}
-
 void addItems() {
   int maxSize = 10;
   int itemIndex = 0;
@@ -135,7 +111,7 @@ void runStackProgram() {
   do {
     displayLogo();
     displayMainMenu();
-    int choice = getIntInput("Please select an option: ", 1, 4);
+    int choice = Utils::getIntInput("Please select an option: ", 1, 4);
     switch (choice) {
       case 1:
         addItems();
