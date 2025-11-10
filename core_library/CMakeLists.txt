@@ -1,5 +1,8 @@
 add_library(core_library STATIC
 src/queue.cpp
+src/ambulance_dispatcher/ambulance_dispatcher.cpp
+src/ambulance_dispatcher/ambulance.cpp
+src/ambulance_dispatcher/circular_queue.cpp
 )
 
 # Public headers: everything in include/ is visible
