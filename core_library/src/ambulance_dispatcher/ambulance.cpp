@@ -87,7 +87,7 @@ string getCurrentDateString()
 }
 
 // Get day of week (Mon, Tue, Wed, etc.)
-string getDayOfWeek(string dateStr)
+string getDayOfWeek()
 {
     time_t now = time(nullptr);
     tm *localTime = localtime(&now);
@@ -141,6 +141,8 @@ void addHoursToDateTime(string &date, string &time, int hours)
         date = dateStream.str();
     }
 }
+
+/* Helper */
 
 // Add hours to time string (HH:MM format)
 string addHoursToTime(string timeStr, int hours)

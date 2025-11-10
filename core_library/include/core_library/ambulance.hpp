@@ -38,7 +38,7 @@ string getCurrentTimeString();
 
 string getCurrentDateString();
 
-string getDayOfWeek(string dateStr);
+string getDayOfWeek();
 
 string addHoursToTime(string timeStr, int hours);
 
