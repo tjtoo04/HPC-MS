@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <iostream>
 #include "utils.hpp"
 
 struct FileIO {
@@ -117,5 +118,41 @@ struct FileIO {
       }
 
       outFile.close();
+  }
+
+  static void removeLastLineFromFile(const std::string &filename) {
+    std::ifstream inFile(filename);
+    if (!inFile.is_open()) {
+      std::cerr << "Error: Could not open file for reading: " << filename << std::endl;
+      return;
+    }
+
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(inFile, line)) {
+      lines.push_back(line);
+    }
+    inFile.close();
+
+    if (lines.empty()) {
+      std::cerr << "Warning: File is empty, nothing to remove.\n";
+      return;
+    }
+
+    lines.pop_back();
+
+    std::ofstream outFile(filename, std::ios::trunc);
+    if (!outFile.is_open()) {
+      std::cerr << "Error: Could not open file for writing: " << filename << std::endl;
+      return;
+    }
+
+    for (size_t i = 0; i < lines.size(); ++i) {
+      outFile << lines[i];
+      if (i < lines.size() - 1)
+        outFile << '\n';
+    }
+
+    outFile.close();
   }
 };

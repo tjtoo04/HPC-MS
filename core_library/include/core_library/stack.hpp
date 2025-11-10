@@ -13,11 +13,32 @@ class Stack {
     static constexpr size_t MAX_BYTES = 1 * 1024 * 1024;  // 1 MB
     static constexpr size_t MAX_ELEMENTS = MAX_BYTES / sizeof(T);
 
-    T data[MAX_ELEMENTS];
+    T* data;  // Change to pointer
     int top;
 
   public:
-    Stack() : top(-1) {}
+    Stack() : data(new T[MAX_ELEMENTS]), top(-1) {}
+    
+    ~Stack() { delete[] data; }  // Add destructor
+    
+    // Add copy constructor and assignment operator (Rule of Three)
+    Stack(const Stack& other) : data(new T[MAX_ELEMENTS]), top(other.top) {
+      for (int i = 0; i <= top; i++) {
+        data[i] = other.data[i];
+      }
+    }
+    
+    Stack& operator=(const Stack& other) {
+      if (this != &other) {
+        delete[] data;
+        data = new T[MAX_ELEMENTS];
+        top = other.top;
+        for (int i = 0; i <= top; i++) {
+          data[i] = other.data[i];
+        }
+      }
+      return *this;
+    }
 
     int getTop() const { return top; }
 
