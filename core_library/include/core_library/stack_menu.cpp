@@ -96,12 +96,12 @@ void displayLogo() {
 }
 
 void displayMainMenu() {
-  cout << "╔════════════════════════════════════════╗" << endl;
-  cout << "║ \033[1;31m1. Add items to stack\033[0m                  ║" << std::endl;
-  cout << "║ \033[1;33m2. Use Last Added Item\033[0m                 ║" << std::endl;
-  cout << "║ \033[1;36m3. Display all stack items\033[0m             ║" << std::endl;
-  cout << "║ \033[1;32m4. Back to main menu\033[0m                   ║" << std::endl;
-  cout << "╚════════════════════════════════════════╝" << endl;
+  std::cout << "╔════════════════════════════════════════╗" << std::endl;
+  std::cout << "║ \033[1;31m1. Add items to stack\033[0m                  ║" << std::endl;
+  std::cout << "║ \033[1;33m2. Use Last Added Item\033[0m                 ║" << std::endl;
+  std::cout << "║ \033[1;36m3. Display all stack items\033[0m             ║" << std::endl;
+  std::cout << "║ \033[1;32m4. Back to main menu\033[0m                   ║" << std::endl;
+  std::cout << "╚════════════════════════════════════════╝" << std::endl;
 }
 
 void runStackProgram() {

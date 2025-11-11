@@ -1,8 +1,11 @@
 #include "core_library/FileIO.hpp"
 #include "core_library/ambulance.hpp"
 #ifdef _WIN32
+#define NOMINMAX
+#define _HAS_STD_BYTE 0
 #include <windows.h>
 #endif
+
 #include "core_library/ambulance_dispatcher.hpp"
 #include <iostream>
 

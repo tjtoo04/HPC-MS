@@ -87,7 +87,7 @@ struct FileIO {
 
   // NOTE: TO FIND A ROW FROM VALUE X OF INDEX Y
   static std::string readLineFromFile(const std::string &filename, std::string targetValue, int targetIndex = 0) {
-    int arrUpperLimit = 100;
+    const int arrUpperLimit = 100;
     std::string lines[arrUpperLimit];
     std::string line;
 
@@ -127,32 +127,35 @@ struct FileIO {
       return;
     }
 
-    std::vector<std::string> lines;
+    std::ofstream tempFile("temp_file.tmp");
+    if (!tempFile.is_open()) {
+      std::cerr << "Error: Could not create temporary file.\n";
+      return;
+    }
+
     std::string line;
+    std::string prevLine;
+    bool firstLine = true;
+
     while (std::getline(inFile, line)) {
-      lines.push_back(line);
+      if (!firstLine) {
+        tempFile << prevLine << '\n';
+      }
+      prevLine = line;
+      firstLine = false;
     }
+
     inFile.close();
+    tempFile.close();
 
-    if (lines.empty()) {
-      std::cerr << "Warning: File is empty, nothing to remove.\n";
+    if (std::remove(filename.c_str()) != 0) {
+      std::cerr << "Error: Could not remove original file.\n";
       return;
     }
-
-    lines.pop_back();
-
-    std::ofstream outFile(filename, std::ios::trunc);
-    if (!outFile.is_open()) {
-      std::cerr << "Error: Could not open file for writing: " << filename << std::endl;
+    if (std::rename("temp_file.tmp", filename.c_str()) != 0) {
+      std::cerr << "Error: Could not rename temp file.\n";
       return;
     }
-
-    for (size_t i = 0; i < lines.size(); ++i) {
-      outFile << lines[i];
-      if (i < lines.size() - 1)
-        outFile << '\n';
-    }
-
-    outFile.close();
   }
+
 };
