@@ -177,6 +177,18 @@ bool CircularQueue::updateFront(const Ambulance &ambulance)
     return true;
 }
 
+// Update rear ambulance's data
+bool CircularQueue::updateRear(const Ambulance &ambulance)
+{
+    if (isEmpty())
+    {
+        return false;
+    }
+    
+    rear->data = ambulance;
+    return true;
+}
+
 // Get all ambulances for file saving
 void CircularQueue::getAllAmbulances(Ambulance ambulances[], int &count) const
 {

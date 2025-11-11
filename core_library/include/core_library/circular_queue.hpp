@@ -40,6 +40,8 @@ public:
 
     bool updateFront(const Ambulance &ambulance);
 
+    bool updateRear(const Ambulance &ambulance);
+
     void getAllAmbulances(Ambulance ambulances[], int &count) const;
 
 };

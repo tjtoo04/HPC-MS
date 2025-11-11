@@ -86,7 +86,7 @@ struct FileIO {
 
   // NOTE: TO FIND A ROW FROM VALUE X OF INDEX Y
   static std::string readLineFromFile(const std::string &filename, std::string targetValue, int targetIndex = 0) {
-    int arrUpperLimit = 100;
+    const int arrUpperLimit = 100;
     std::string lines[arrUpperLimit];
     std::string line;
 
