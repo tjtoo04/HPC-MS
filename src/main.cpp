@@ -24,6 +24,7 @@ void enableColorSupport() {
 
 void runQueue() {
   Queue patientQueue("queue.txt");
+  std::cout << "somethinggg";
 
   std::cout << "===========================================\n";
   std::cout << "  HOSPITAL PATIENT CARE MANAGEMENT SYSTEM\n";
