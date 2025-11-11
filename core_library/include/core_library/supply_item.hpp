@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "FileIO.hpp"
 
 struct SupplyItem {
@@ -21,12 +23,22 @@ struct SupplyItem {
     this->batch = batch;
   }
   
-  void displaySupplyItem() {
-    std::cout << this->id << std::endl;
-    std::cout << this->type << std::endl;
-    std::cout << this->quantity << std::endl;
-    std::cout << this->batch << std::endl;
-  }
+void displaySupplyItem() {
+    std::ostringstream idLine, typeLine, quantityLine, batchLine;
+    idLine << "ID: " << this->id;
+    typeLine << "Type: " << this->type;
+    quantityLine << "Quantity: " << this->quantity;
+    batchLine << "Batch: " << this->batch;
+
+    std::cout << "\n╔═══════════════════════════════════════╗" << std::endl;
+
+    std::cout << "║ " << std::left << std::setw(38) << idLine.str() << "║" << std::endl;
+    std::cout << "║ " << std::left << std::setw(38) << typeLine.str() << "║" << std::endl;
+    std::cout << "║ " << std::left << std::setw(38) << quantityLine.str() << "║" << std::endl;
+    std::cout << "║ " << std::left << std::setw(38) << batchLine.str() << "║" << std::endl;
+
+    std::cout << "╚═══════════════════════════════════════╝" << std::endl;
+}
 
   std::string toString() {
     std::string delimiter = ",";

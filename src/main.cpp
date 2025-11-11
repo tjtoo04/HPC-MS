@@ -1,14 +1,15 @@
 #include "core_library/FileIO.hpp"
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
 #endif
 #include <iostream>
 #include "core_library/ambulance_dispatcher.hpp"
 
 #include "core_library/supply_item.hpp"
-// #include "core_library/stack.hpp"
+#include "core_library/stack.hpp"
 #include <iostream>
-// #include "core_library/stack_menu.cpp"
+#include "core_library/stack_menu.cpp"
 
 void enableColorSupport()
 {
@@ -22,42 +23,8 @@ void enableColorSupport()
 #endif
 }
 
-int main(int argc, char *argv[])
+void ambulanceDispatch()
 {
-  enableColorSupport();
-
-
-  std::cout << "We Are So Cooked";
-
-  const int MAX_LINES = 5;
-  std::string data[MAX_LINES] = {
-      "Alice",
-      "Bob",
-      "Charlie",
-      "David",
-      "Eve",
-  };
-
-  // Write to file
-  if (FileIO::writeToFile("patients.txt", data, MAX_LINES))
-    std::cout << "File written successfully!\n";
-  else
-    std::cout << "Failed to write file.\n";
-
-  // Read back
-  std::string readBuffer[MAX_LINES];
-  int linesRead = FileIO::readFromFile("patients.txt", readBuffer, MAX_LINES);
-
-  if (linesRead > 0)
-  {
-    std::cout << "Read " << linesRead << " lines:\n";
-    for (int i = 0; i < linesRead; ++i)
-      std::cout << readBuffer[i] << "\n";
-  }
-  else
-  {
-    std::cout << "Failed to read file.\n";
-  }
 
   /* Role 4: Ambulance Dispatcher */
 
@@ -76,7 +43,7 @@ int main(int argc, char *argv[])
             ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗             
             ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝             
     )" << C_RESET
-          << endl;
+       << endl;
 
   cout << "\n"
        << C_BOLD << C_GREEN << "        ╔═══════════════════════════════════════════════╗" << C_RESET << endl;
@@ -86,8 +53,109 @@ int main(int argc, char *argv[])
 
   AmbulanceDispatcher dispatcher;
   dispatcher.run();
-  
-  // runStackProgram();
+}
+
+void showMainMenu()
+{
+  bool isRunning = true;
+  while (isRunning)
+  {
+    cout << C_BOLD << C_CYAN << R"(
+                  ██╗  ██╗██████╗  ██████╗    ███╗   ███╗███████╗
+                  ██║  ██║██╔══██╗██╔════╝    ████╗ ████║██╔════╝
+                  ███████║██████╔╝██║         ██╔████╔██║███████╗
+                  ██╔══██║██╔═══╝ ██║         ██║╚██╔╝██║╚════██║
+                  ██║  ██║██║     ╚██████╗    ██║ ╚═╝ ██║███████║
+                  ╚═╝  ╚═╝╚═╝      ╚═════╝    ╚═╝     ╚═╝╚══════╝
+                                                          
+)" << C_RESET
+         << endl;
+
+    cout << C_BOLD << C_GREEN << R"(
+                  ╔══════════════════════════════════════════════╗
+                  ║   Hospital Patient Care Management System    ║
+                  ║                 (Group 15)                   ║
+                  ╚══════════════════════════════════════════════╝
+)" << C_RESET
+         << endl;
+
+    cout << C_BOLD << "                                 ▼ Select a Role ▼\n"
+         << C_RESET;
+
+    cout << C_YELLOW << R"(
+            ┌─────────────────────────────────────────────────────────────┐
+            │  1. Patient Admission Clerk         - Too Tze Jiat          │
+            │  2. Medical Supply Manager          - Low Tian Wei          │
+            │  3. Emergency Department Officer    - Cindy Pua Kah Qi      │
+            │  4. Ambulance Dispatcher            - Kok Jia Yin           │
+            │  5. Exit                                                    │
+            └─────────────────────────────────────────────────────────────┘
+    )" << C_RESET;
+
+    int choice = Utils::getIntInput("\nSelect the role number: ", 1, 5);
+
+    switch (choice)
+    {
+    case 1:
+      break;
+    case 2:
+      runStackProgram();
+      break;
+    case 3:
+      break;
+    case 4:
+      ambulanceDispatch();
+      break;
+    case 5:
+      cout << C_BOLD << C_CYAN << R"(
+                  ╔══════════════════════════════════════════════╗
+                  ║        Thank you for using the system!       ║
+                  ╚══════════════════════════════════════════════╝
+)" << C_RESET
+           << endl;
+      isRunning = false;
+      break;
+    }
+  }
+}
+
+int main(int argc, char *argv[])
+{
+  enableColorSupport();
+
+  // std::cout << "We Are So Cooked";
+
+  // const int MAX_LINES = 5;
+  // std::string data[MAX_LINES] = {
+  //     "Alice",
+  //     "Bob",
+  //     "Charlie",
+  //     "David",
+  //     "Eve",
+  // };
+
+  // // Write to file
+  // if (FileIO::writeToFile("patients.txt", data, MAX_LINES))
+  //   std::cout << "File written successfully!\n";
+  // else
+  //   std::cout << "Failed to write file.\n";
+
+  // // Read back
+  // std::string readBuffer[MAX_LINES];
+  // int linesRead = FileIO::readFromFile("patients.txt", readBuffer, MAX_LINES);
+
+  // if (linesRead > 0)
+  // {
+  //   std::cout << "Read " << linesRead << " lines:\n";
+  //   for (int i = 0; i < linesRead; ++i)
+  //     std::cout << readBuffer[i] << "\n";
+  // }
+  // else
+  // {
+  //   std::cout << "Failed to read file.\n";
+  // }
+
+  showMainMenu();
 
   return 0;
 }
