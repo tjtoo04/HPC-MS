@@ -34,6 +34,7 @@ struct Ambulance
   void generateShiftTimes(string startTime, int durationHours);
 };
 
+// Helper functions
 string getCurrentTimeString();
 
 string getCurrentDateString();

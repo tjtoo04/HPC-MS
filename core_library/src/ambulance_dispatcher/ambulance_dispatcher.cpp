@@ -469,25 +469,13 @@ void AmbulanceDispatcher::normalRotate()
     newDuty.shiftEndTime = nextShiftEnd;
     ambulanceQueue.updateFront(newDuty);
 
-    Ambulance updatedAmbulances[MAX_AMB];
-    ambulanceQueue.getAllAmbulances(updatedAmbulances, count);
-
-    // Update last ambulance
-    updatedAmbulances[count - 1].scheduleDate = rotatedDate;
-    updatedAmbulances[count - 1].shiftStartTime = rotatedStartTime;
-    updatedAmbulances[count - 1].shiftEndTime = rotatedEndTime;
-
-    // Rebuild the queue with updated schedules
-    while (!ambulanceQueue.isEmpty())
-    {
-        Ambulance temp;
-        ambulanceQueue.dequeue(temp);
-    }
-
-    for (int i = 0; i < count; i++)
-    {
-        ambulanceQueue.enqueue(updatedAmbulances[i]);
-    }
+    // Update rear (the rotated ambulance)
+    Ambulance rotatedAmb = currentDuty;
+    rotatedAmb.status = "Standby";
+    rotatedAmb.scheduleDate = rotatedDate;
+    rotatedAmb.shiftStartTime = rotatedStartTime;
+    rotatedAmb.shiftEndTime = rotatedEndTime;
+    ambulanceQueue.updateRear(rotatedAmb);
 
     cout << "\n"
          << C_GREEN << "═══════════════════════════════════════════════" << C_RESET << endl;
