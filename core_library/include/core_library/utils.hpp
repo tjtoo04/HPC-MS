@@ -52,28 +52,4 @@ struct Utils
       }
     }
   }
-
-  static int getIntInput(const std::string &prompt, int min, int max)
-  {
-    int choice;
-    while (true)
-    {
-      std::cout << prompt;
-      if (std::cin >> choice)
-      {
-        if (choice >= min && choice <= max)
-        {
-          if (std::cin.peek() == '\n') std::cin.ignore();
-          return choice;
-        }
-        std::cout << "Invalid choice. Please enter between " << min << " and " << max << ".\n";
-      }
-      else
-      {
-        std::cout << "Invalid input. Please enter a number.\n";
-        std::cin.clear();
-        std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n'); 
-      }
-    }
-  }
 };

@@ -186,42 +186,4 @@ struct FileIO
     }
   }
 
-  static void removeLastLineFromFile(const std::string &filename) {
-    std::ifstream inFile(filename);
-    if (!inFile.is_open()) {
-      std::cerr << "Error: Could not open file for reading: " << filename << std::endl;
-      return;
-    }
-
-    std::ofstream tempFile("temp_file.tmp");
-    if (!tempFile.is_open()) {
-      std::cerr << "Error: Could not create temporary file.\n";
-      return;
-    }
-
-    std::string line;
-    std::string prevLine;
-    bool firstLine = true;
-
-    while (std::getline(inFile, line)) {
-      if (!firstLine) {
-        tempFile << prevLine << '\n';
-      }
-      prevLine = line;
-      firstLine = false;
-    }
-
-    inFile.close();
-    tempFile.close();
-
-    if (std::remove(filename.c_str()) != 0) {
-      std::cerr << "Error: Could not remove original file.\n";
-      return;
-    }
-    if (std::rename("temp_file.tmp", filename.c_str()) != 0) {
-      std::cerr << "Error: Could not rename temp file.\n";
-      return;
-    }
-  }
-
 };
