@@ -24,10 +24,12 @@ public:
 
     ~CircularQueue();
 
+    /* Helper */
     bool isEmpty() const;
 
     int getSize() const;
 
+    /* Operations */
     void enqueue(const Ambulance &ambulance);
 
     bool dequeue(Ambulance &ambulance);
@@ -39,6 +41,8 @@ public:
     bool getFront(Ambulance &ambulance) const;
 
     bool updateFront(const Ambulance &ambulance);
+
+    bool updateRear(const Ambulance &ambulance);
 
     void getAllAmbulances(Ambulance ambulances[], int &count) const;
 

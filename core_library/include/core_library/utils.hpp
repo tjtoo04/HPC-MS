@@ -1,16 +1,16 @@
-#include <iostream>
 #include <string>
+#include <iostream>
 
-struct Utils {
-  static int splitStringToArr(std::string *arr, int arrUpperLimit,
-                              const std::string &s,
-                              const std::string &delimiter) {
+struct Utils
+{
+  static int splitStringToArr(std::string *arr, int arrUpperLimit, const std::string &s, const std::string &delimiter)
+  {
     int arrPos = 0;
     size_t start = 0;
     size_t pos = 0;
 
-    while ((pos = s.find(delimiter, start)) != std::string::npos &&
-           arrPos < arrUpperLimit) {
+    while ((pos = s.find(delimiter, start)) != std::string::npos && arrPos < arrUpperLimit)
+    {
       arr[arrPos++] = s.substr(start, pos - start);
       start = pos + delimiter.length();
     }
@@ -20,29 +20,36 @@ struct Utils {
     return arrPos;
   }
 
-  static bool isInteger(const std::string &s) {
-    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+')))
-      return false;
-
-    char *p;
-    strtol(s.c_str(), &p, 10); // Attempt to convert to long
-
-    return (*p == 0); // Check if the entire string was consumed
+  // Clear leftover newline in input buffer
+  static void clearInputBuffer()
+  {
+    if (std::cin.peek() == '\n')
+      std::cin.ignore();
   }
 
-  static int getInput(int maxRange, std::string prompt = "Enter your input: ") {
-    std::string input;
-    std::cout << prompt << '\n';
-    std::cin >> input;
-    if (!isInteger(input)) {
-      std::cout << "Input must be an integer!" << '\n';
-      return -1;
-    } else {
-      if (std::stoi(input) > maxRange) {
-        std::cout << "Input is too large. Try again" << '\n';
+  // Integer input with validation
+  static int getIntInput(const std::string &prompt, int min, int max)
+  {
+    int choice;
+    while (true)
+    {
+      std::cout << prompt;
+      if (std::cin >> choice)
+      {
+        if (choice >= min && choice <= max)
+        {
+          clearInputBuffer();
+          return choice;
+        }
+        std::cout << "Invalid choice. Please enter between "
+                  << min << " and " << max << ".\n";
       }
-
-      return std::stoi(input);
+      else
+      {
+        std::cout << "Invalid input. Please enter a number.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      }
     }
   }
 

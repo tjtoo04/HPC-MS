@@ -35,6 +35,7 @@ CircularQueue::~CircularQueue()
     size = 0;
 }
 
+/* Helper */
 // Check queue empty
 bool CircularQueue::isEmpty() const
 {
@@ -47,6 +48,7 @@ int CircularQueue::getSize() const
     return size;
 }
 
+/* Operations */
 // Enqueue: Add an ambulance to the rear of the queue
 void CircularQueue::enqueue(const Ambulance &ambulance)
 {
@@ -174,6 +176,18 @@ bool CircularQueue::updateFront(const Ambulance &ambulance)
     }
 
     rear->next->data = ambulance;
+    return true;
+}
+
+// Update rear ambulance's data
+bool CircularQueue::updateRear(const Ambulance &ambulance)
+{
+    if (isEmpty())
+    {
+        return false;
+    }
+    
+    rear->data = ambulance;
     return true;
 }
 

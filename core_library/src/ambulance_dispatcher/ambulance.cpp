@@ -122,6 +122,7 @@ void addHoursToDateTime(string &date, string &time, int hours)
 
         day += daysToAdd;
 
+        // Date Increment
         int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
         while (day > daysInMonth[month - 1])
         {
