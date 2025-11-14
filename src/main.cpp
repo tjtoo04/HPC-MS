@@ -4,6 +4,7 @@
 #define NOMINMAX
 #include <windows.h>
 #endif
+
 #include "core_library/ambulance_dispatcher.hpp"
 
 #include "core_library/stack.hpp"
