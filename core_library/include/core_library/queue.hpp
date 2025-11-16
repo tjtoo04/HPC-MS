@@ -18,13 +18,13 @@ struct Patient {
           const std::string &condition)
       : patientID(id), name(n), conditionType(condition) {}
 
-  // Convert patient data to CSV format for file storage
-  std::string toCSV() const {
+  // Convert patient data to TXT format for file storage
+  std::string toTXT() const {
     return patientID + "," + name + "," + conditionType;
   }
 
-  // Parse CSV line to create Patient object
-  static Patient fromCSV(const std::string &line) {
+  // Parse TXT line to create Patient object
+  static Patient fromTXT(const std::string &line) {
     Patient p;
     std::stringstream ss(line);
     std::getline(ss, p.patientID, ',');
@@ -37,12 +37,12 @@ struct Patient {
 // Queue implementation for Patient Admission Management
 struct Queue {
 private:
-  static const int MAX_SIZE = 100; // Max queue capacity
-  Patient patients[MAX_SIZE];      // Array to store patients
-  int frontIndex;                  // Index of front element
-  int rearIndex;                   // Index of rear element
-  int count;                       // Current number of patients in queue
-  std::string filename;            // File to persist patient data
+  static const int MAX_SIZE = 5; // Max queue capacity
+  Patient patients[MAX_SIZE];    // Array to store patients
+  int frontIndex;                // Index of front element
+  int rearIndex;                 // Index of rear element
+  int count;                     // Current number of patients in queue
+  std::string filename;          // File to persist patient data
 
   // Load patients from file during initialization using FileIO
   void loadFromFile() {
@@ -62,7 +62,7 @@ private:
     for (int i = 0; i < linesRead; i++) {
       if (!lines[i].empty()) {
         rearIndex = (rearIndex + 1) % MAX_SIZE;
-        patients[rearIndex] = Patient::fromCSV(lines[i]);
+        patients[rearIndex] = Patient::fromTXT(lines[i]);
         count++;
       }
     }
@@ -79,10 +79,10 @@ private:
 
     std::string lines[MAX_SIZE];
 
-    // Convert all patients in queue to CSV format
+    // Convert all patients in queue to TXT format
     for (int i = 0; i < count; i++) {
       int index = (frontIndex + i) % MAX_SIZE;
-      lines[i] = patients[index].toCSV();
+      lines[i] = patients[index].toTXT();
     }
 
     // Write to file using FileIO
