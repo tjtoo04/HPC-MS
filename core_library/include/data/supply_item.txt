@@ -4,3 +4,4 @@ SI3,hippo,2,BT12
 SI4,broom,12,BT123
 SI5,spoon,10,SISI5
 SI6,brush,12,tp0101
+SI7,table,20,BT37

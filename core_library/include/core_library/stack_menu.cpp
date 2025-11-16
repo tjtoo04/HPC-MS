@@ -39,7 +39,7 @@ void addItems() {
       maxSize = newMaxSize;
     }
 
-    temp[itemIndex++] = SupplyItem(std::to_string(++id), itemType, quantity, batchId);
+    temp[itemIndex++] = SupplyItem("SI" + std::to_string(++id), itemType, quantity, batchId);
 
     std::cout << "Continue? (press Enter to continue, or any key then Enter to stop): ";
     std::getline(std::cin, testInput);

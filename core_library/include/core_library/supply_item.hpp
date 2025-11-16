@@ -17,7 +17,8 @@ struct SupplyItem {
 
   SupplyItem() : id(""), type(""), quantity(0), batch("") {}
   SupplyItem(std::string id, std::string type, int quantity, std::string batch) {
-    this->id = "SI" + id;
+    // this->id = "SI" + id;
+    this->id = id;
     this->type = type;
     this->quantity = quantity;
     this->batch = batch;
