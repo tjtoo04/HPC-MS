@@ -59,8 +59,8 @@ void Ambulance::generateShiftTimes(string startTime, int durationHours)
     shiftEndTime = addHoursToTime(startTime, durationHours);
 }
 
-// Get current time in HH:MM format
-string getCurrentTimeString()
+// Get current time in HH:MM format (static to avoid duplicate symbol)
+static string getCurrentTimeString()
 {
     time_t now = time(nullptr);
     tm *localTime = localtime(&now);
@@ -72,8 +72,8 @@ string getCurrentTimeString()
     return ss.str();
 }
 
-// Get current date in YYYY-MM-DD format
-string getCurrentDateString()
+// Get current date in YYYY-MM-DD format (static to avoid duplicate symbol)
+static string getCurrentDateString()
 {
     time_t now = time(nullptr);
     tm *localTime = localtime(&now);

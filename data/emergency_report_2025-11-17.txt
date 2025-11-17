@@ -1,0 +1,17 @@
+===================================
+  EMERGENCY DEPARTMENT REPORT
+  Date: 2025-11-17
+  Time: 11:17:08
+===================================
+
+Total Pending Cases: 1
+
+Case 1:
+  ID: EC0004
+  Patient: Cindy
+  Triage: Level 5 - NON-URGENT
+  Type: Type C - Medical Condition
+  Symptoms: Common cold
+  Arrival: 2025-11-17 11:16:54
+  Waiting: 0 minutes
+
