@@ -5,6 +5,7 @@
 #endif
 #include <iostream>
 #include "core_library/ambulance_dispatcher.hpp"
+#include "core_library/emergency_department/emergency_officer.hpp"
 
 #include "core_library/supply_item.hpp"
 #include "core_library/stack.hpp"
@@ -55,6 +56,45 @@ void ambulanceDispatch()
   dispatcher.run();
 }
 
+void priorityQueueSystem()
+{
+  cout << C_BOLD << C_CYAN << R"(
+    ██████╗ ██████╗ ██╗ ██████╗ ██████╗ ██╗████████╗██╗   ██╗
+    ██╔══██╗██╔══██╗██║██╔═══██╗██╔══██╗██║╚══██╔══╝╚██╗ ██╔╝
+    ██████╔╝██████╔╝██║██║   ██║██████╔╝██║   ██║    ╚████╔╝ 
+    ██╔═══╝ ██╔══██╗██║██║   ██║██╔══██╗██║   ██║     ╚██╔╝  
+    ██║     ██║  ██║██║╚██████╔╝██║  ██║██║   ██║      ██║   
+    ╚═╝     ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝   ╚═╝      ╚═╝   
+                                                              
+            ██████╗ ██╗   ██╗███████╗██╗   ██╗███████╗      
+            ██╔═══██╗██║   ██║██╔════╝██║   ██║██╔════╝      
+            ██║   ██║██║   ██║█████╗  ██║   ██║█████╗        
+            ██║▄▄ ██║██║   ██║██╔══╝  ██║   ██║██╔══╝        
+            ╚██████╔╝╚██████╔╝███████╗╚██████╔╝███████╗      
+            ╚══▀▀═╝  ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝      
+    )" << C_RESET
+       << endl;
+
+  cout << "\n"
+       << C_BOLD << C_GREEN
+       << "        ╔═══════════════════════════════════════════════╗" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN
+       << "        ║   ROLE 3: Emergency Department Officer        ║" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN
+       << "        ║       (CINDY PUA KAH QI - TP071189)           ║" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN
+       << "        ║                                               ║" << C_RESET << endl;
+  cout << C_BOLD << C_CYAN
+       << "        ║   Data Structure: MIN-HEAP PRIORITY QUEUE     ║" << C_RESET << endl;
+  cout << C_BOLD << C_CYAN
+       << "        ║   Time Complexity: O(log n) operations        ║" << C_RESET << endl;
+  cout << C_BOLD << C_GREEN
+       << "        ╚═══════════════════════════════════════════════╝" << C_RESET << endl;
+
+  EmergencyOfficer officer;
+  officer.run();
+}
+
 void showMainMenu()
 {
   bool isRunning = true;
@@ -97,13 +137,18 @@ void showMainMenu()
     switch (choice)
     {
     case 1:
+      // Patient Admission Clerk
       break;
     case 2:
+      // Medical Supply Manager
       runStackProgram();
       break;
     case 3:
+      // Emergency Department Officer 
+      priorityQueueSystem();
       break;
     case 4:
+      // Ambulance Dispatcher
       ambulanceDispatch();
       break;
     case 5:
